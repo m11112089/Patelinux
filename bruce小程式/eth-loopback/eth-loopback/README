@@ -1,0 +1,308 @@
+
+# **PHY Debug record**
+
+## **1. PHY introduce**
+![alt text](image-1.png)
+- Target PHYs: **KSZ9031** / **KSZ9131**
+- Key Features:
+  - **PHY**: Physical Layer for Ethernet communication.
+  - **RGMII**: Reduced Gigabit Media Independent Interface for connecting the PHY and MAC.
+  - **MDIO**: Management Data Input/Output for PHY register communication.
+  - **MAC**: Media Access Control layer for handling data link layer protocols.
+
+---
+
+## **2. Tool introduce**
+### **Windows Tools**
+- **Wireshark**:
+  - Packet capture and analysis for Ethernet traffic.
+  - Used for debugging traffic between devices.
+- **ARP**:
+  - instead of ping, it can brocast all device.
+  example: `arp -a`
+
+### **u-boot**
+- **mii**:
+  - MDIO read/write for debugging PHY registers.
+  - Example:
+    ```bash
+    mii read <phy_addr> <register>
+    ```
+- **mdio**:
+  - Similar to `mii`, interacts with PHY registers.
+- **ping**:
+  - Used for connectivity testing. Note: In U-Boot, it cannot process ICMP replies.
+
+### **Petalinux**
+- **ifconfig**:
+  - Network interface configuration.
+  - Example:
+    ```bash
+    ifconfig eth0 up
+    ```
+- **arp**:
+  - Debug broadcast-level communication and ARP resolution.
+- **ping**:
+  - Test connectivity; check for packet loss.
+- **tcpdump** (from GitHub project):
+  - Network packet capture tool for real-time analysis.
+  - Example:
+    ```bash
+    tcpdump -i eth0 -w capture.log
+    ```
+- **eth-loopback**:
+  - Custom application for Ethernet loopback testing.
+- **phytool**:
+  - Tool to read/write PHY registers for fine-tuning and debugging.
+  - Example:
+    ```bash
+    phytool read eth0/3/0x00
+    phytool write eth0/3/0x10 0x1140
+    ```
+    ```bash
+    # PHY Interface and Address
+    INTERFACE="eth0"
+    PHY_ADDRESS="3"
+
+    # Output file for the register dump
+    OUTPUT_FILE="phy_register_dump.txt"
+
+    # Start dumping
+    echo "Dumping PHY registers from $INTERFACE with address $PHY_ADDRESS..."
+    echo "Register dump saved to $OUTPUT_FILE"
+
+    # Clear the output file
+    > $OUTPUT_FILE
+
+    # Iterate over all possible register addresses (0x00 to 0xFF)
+    for ((reg=0; reg<=60; reg++)); do
+        # Read the register value using phytool
+        value=$(phytool read "$INTERFACE/$PHY_ADDRESS/$reg")
+        
+        # Save the register and value to the file
+        printf "Register 0x%02X: %s\n" "$reg" "$value" >> "$OUTPUT_FILE"
+        sleep 0.1
+    done
+    echo "Dump complete!"
+    ```
+- **ethtool**:
+  - Interface statistics and control.
+  - Example:
+    ```bash
+    ethtool -S eth0
+    ```
+- **iperf2**:網路連線效能測試
+
+  - server:
+    ```
+    iperf -s
+    ```
+  - client 
+    ```
+    iperf -c 192.168.1.1 -w 100M -t 120 -i 1
+
+    -c 192.168.3.58 :Server端的IP
+    -w 100M :測試的檔案大小
+    -t 120:監視測量數據時間為120秒
+    -i 1:每隔1秒將數據顯示出來
+    ```
+    ![alt text](image-5.png)
+---
+
+## **3. 基本資訊**
+
+- 硬體資訊
+  - **device tree**:
+    ```json
+    ethernet@ff0c0000 {
+              compatible = "xlnx,zynqmp-gem\0cdns,zynqmp-gem\0cdns,gem";
+              status = "okay";
+              interrupt-parent = <0x04>;
+              interrupts = <0x00 0x3b 0x04 0x00 0x3b 0x04>;
+              reg = <0x00 0xff0c0000 0x00 0x1000>;
+              clock-names = "pclk\0hclk\0tx_clk\0rx_clk\0tsu_clk";
+              #address-cells = <0x01>;
+              #size-cells = <0x00>;
+              iommus = <0x0d 0x875>;
+              power-domains = <0x0c 0x1e>;
+              resets = <0x0e 0x1e>;
+              clocks = <0x03 0x1f 0x03 0x69 0x03 0x2e 0x03 0x32 0x03 0x2c>;
+              phy-mode = "rgmii";
+              xlnx,ptp-enet-clock = <0x00>;
+              local-mac-address = [ff ff ff ff ff ff];
+              phandle = <0x52>;
+          };
+    ```
+  - `mii info`
+
+  ![alt text](image-6.png)
+  - `mdio info`
+
+  ![alt text](image-7.png)
+
+- **IP Address**:
+  - Ensure the correct IP address is assigned to `eth0`.
+
+- **Register Settings**:
+  - Confirm key PHY registers (e.g., basic control and status) match the expected configuration.![alt text](image-8.png)
+
+- **MAC Address**:
+  - Check the MAC address of `eth0` and ensure no conflicts exist.
+  - linux 可能會自動指派mac地址 ...?
+
+  UAA/LAA  MAC位址共48位元（6個位元組），以十六進位表示。第一個byte的最低有效位元(LSB)為單播位址(0)/多播位址(1)，第一個byte從最低有效位元數去第2個bit為廣域位址(0)/區域位址(1)。前3~24位元由IEEE決定如何分配給每一家製造商，且不重複，後24位元由實際生產該網路裝置的廠商自行指定且不重複。
+
+## **Slove Pin Strap Mode**
+
+是電還沒ready嗎?
+
+Refer to the datasheet for **Pin Strap Mode** definitions:
+- Check the current pin configuration for:
+  - RGMII mode (e.g., Full Duplex, Speed Capabilities).
+  - Energy Efficient Ethernet (EEE) support.
+- Example: KSZ9131 Pin Definitions
+  ![alt text](image.png)
+
+---
+
+## **4. Remote Loopback**
+![alt text](image-3.png)
+uboot
+```
+mii write 3 0 1140
+mii dump 3 0 
+mii write 3 0xD 0x0002
+mii write 3 0xE 0x0011
+mii write 3 0xD 0x4002
+mii write 3 0xE 0x0100
+
+mii write 3 0xD 0x0002
+mii write 3 0xE 0x0011
+mii write 3 0xD 0x4002
+mii read 3 0xE
+```
+C:\Users\user\Downloads\eth-loopback\eth-loopback\README
+patelinux
+```
+phytool write eth0/3/0 0x0140
+phytool write eth0/3/0x11 0x0100
+```
+- Configure the remote PHY to enable loopback mode (using MDIO or register access).
+- Use `eth-loopback` or `ping` to test connectivity.
+- Verify packet capture with `tcpdump`.
+
+---
+
+## **5. Local Loopback**
+![alt text](image-2.png)
+uboot: 
+```
+mii write 3 0 1140
+mii dump 3 0 
+mii write 3 0xD 0x0002
+mii write 3 0xE 0x0011
+mii write 3 0xD 0x4002
+mii write 3 0xE 0x0100
+
+mii write 3 0xD 0x0002
+mii write 3 0xE 0x0011
+mii write 3 0xD 0x4002
+mii read 3 0xE
+
+```
+
+patelinux:
+```
+phytool write eth0/3/0 0x4140
+phytool write eth0/3/0x9 0x1000
+
+ethtool -s eth0 speed 1000 duplex full autoneg off
+tcpdump -i eth0 -w capture.log&
+eth-loopback -s eth0
+killall tcpdump
+tcpdump -qns 0 -X -r capture.log
+ethtool -S eth0
+```
+- **Internal Mode**:
+  - Enable local loopback on the PHY to test the MAC-PHY connection.
+  - Use `phytool` or MDIO commands to set loopback mode:
+    ```bash
+    phytool write eth0/3/0x1F <loopback_mode_value>
+    ```
+- Test using:
+  - `eth-loopback`
+  - `tcpdump` to monitor internal packets.
+
+---
+
+## **6. skew**
+![alt text](image-4.png)
+- Debug timing issues related to RGMII:
+  - Verify **RGMII Pad Skew Adjustment** settings:
+    - KSZ9031: 60 ps steps.
+    - KSZ9131: Separate skew settings for Data/Control and RXC/TXC.
+  - Use `phytool` or equivalent tools to fine-tune skew parameters.
+  - Confirm with a scope or logic analyzer for signal integrity.
+
+---
+
+
+
+---
+
+## **8. Debugging Checklist**
+### Connectivity Testing
+- Verify the PHY reports `Link UP` using:
+  ```bash
+  ethtool eth0
+  ```
+- Confirm ARP broadcasts and replies:
+  ```bash
+  arp -a
+  ```
+- Use `ping` to test connectivity to remote devices.
+
+### Packet Captures
+- Capture and analyze packets using `tcpdump` or Wireshark:
+  ```bash
+  tcpdump -i eth0 -w capture.pcap
+  ```
+- Ensure ICMP echo requests and replies are received.
+
+### PHY Register Debugging
+- Dump all PHY registers:
+  ```bash
+  phytool read eth0/3/<register>
+  ```
+- Compare with datasheet default values.
+
+### Skew Adjustment
+- Fine-tune the RGMII skew settings:
+  ```bash
+  phytool write eth0/3/0x104 <value>
+  ```
+- Test and verify using loopback or external communication.
+
+### 兩個裝置對接
+同時 negohation
+phytool write eth0/3/28 0x2440
+phytool read eth0/3/28
+
+### auto negotion speed test
+
+ip link set eth0 down
+ip link set eth0 up -> 速度很慢
+ethtool -s eth0 speed 1000 -> 連不上
+ethtool -s eth0 speed 100  -> 馬上連上
+
+# 
+&gem1 {  
+    phy-mode = "rgmii-id";  
+	status = "disabled";
+};
+
+![alt text](image-9.png)
+
+掉包問題
+
+![alt text](image-10.png)

@@ -1,0 +1,13 @@
+APP = mdio-tool
+# Add any other object files to this list below
+APP_OBJS = mdio-tool.o mii.o
+all: build
+
+build: $(APP) $(SPLITE_IMG) $(IMGS) $(MQ_NOTIFY) $(FILE2MEM)
+
+$(APP): $(APP_OBJS)
+	$(CC) -o $@ $(APP_OBJS) $(LDFLAGS) $(LDLIBS)
+
+clean:
+	rm -f $(APP) *.o
+
