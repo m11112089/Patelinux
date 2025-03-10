@@ -4,29 +4,27 @@
 
 <font color=#0000FF>Bruce的小程式 </font>
 
-
-如何使用Patelinux編譯程式？ [Tutorial](link)
-- Yocto
-為什麼有bb檔，但是沒有在rootfs裡面？
 # DISK
 影響儲存檔案速度的因素:
 
-    - 檔案系統之間的差別(差了20%以上，超誇張)
+    - 檔案系統之間的差異`xfs`, `ext4`, `journal`(差了20%以上，超誇張)
         - fdisk
         - xfs
         - dd
+        - time
         - df
     - FSYNC/OSYNC
 
 Sync-資料流中的檔案同步問題
 要用Ram Disk嗎？
 
+# Power
+- hellopm
 
 # Memory
-file:///home/kai/tmp/tmp2.c
-
 與R5共用記憶體，reserved memory
 dump/write memory data
+- mmap()
 
 # MailBox
 與R5溝通
@@ -36,19 +34,34 @@ dump/write memory data
 - PC (Windows, Linux) 
     - Wireshark
 - Petalinux
-    - iperf 測速度
+    - iperf
     - ethertool
     - phytool
     - eth-loopback
 
-裝置之間的傳輸
+裝置之間的網路傳輸
 - tftp
+    - [tftpd64](https://www.cnblogs.com/coolYuan/p/9035500.html)
 - tcp
+- socat
+- mysocat (pipline transmition) 
 
 usb hub怎麼一插上去就自動設定ip
 # Device Tree
 ???
 # Linux System programming(系統程式設計)
-IO, Daemon如何log?如何printf? 
+[編譯自己的 Hello world!](./LinuxSystemPorgramming/編譯Petalinux中的程式.md)
+
+硬體儲存空間不夠大?跑不動Python? 在外掛裝置中製作自己的檔案系統巴!
+
+怎麼讓R5知道你還活著? Heartbeat實現
+- linux singnal
+- mailbox
+
+Daemon如何log?如何printf? 
+
+process之間的通訊message queue
+
+版本號
 
 fopen() vs open()

@@ -40,15 +40,17 @@ e.g. petalinux-build -c app -x compile
 編譯完成後，執行檔會出現在 `<proj-root>/build/tmp/work/cortexa72-cortexa53-xilinx-linux/app/1.0-r0/`
 
 ### 2.4 傳輸到目標上執行
-可以使用`usb` 或 `ethernet`來操作，這邊使用 `ethernet`
+可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`
 ```
 tftp -g -r test 192.168.1.1
 tftp -g -r test2 192.168.1.1
 
+chmod +x test
+chmod +x test2
+
 ./test
 ./test2
 ```
-
 # 3 Daemon
 
 # 4 Delete Petalinux App
