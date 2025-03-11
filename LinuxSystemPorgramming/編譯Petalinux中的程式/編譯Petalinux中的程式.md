@@ -15,7 +15,7 @@ e.g. petalinux-create -t apps --template install -n app  --enable
 該資料夾會出現在 `<proj-root>/project-spec/meta-user/recipes-apps/appname`
 
 ### 2.2 編輯編譯config
-這邊需要修改`app.bb`, `Makefile`, 直接查看教學目錄下的`app-2`資料夾
+這邊需要修改`app.bb`, `Makefile`, 直接查看本目錄下的`app-2`資料夾
 ```
 .
 ├── README
@@ -40,7 +40,7 @@ e.g. petalinux-build -c app -x compile
 編譯完成後，執行檔會出現在 `<proj-root>/build/tmp/work/cortexa72-cortexa53-xilinx-linux/app/1.0-r0/`
 
 ### 2.4 傳輸到目標上執行
-可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`
+可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`從
 ```
 tftp -g -r test 192.168.1.1
 tftp -g -r test2 192.168.1.1
@@ -51,8 +51,17 @@ chmod +x test2
 ./test
 ./test2
 ```
-# 3 Daemon
 
+### 2.5 將其編譯到image.ub中
+```
+petalinux-build
+```
+
+執行檔會出現在 `/usr/bin/test`, `/usr/bin/test2`中
+
+
+# 3 Daemon
+# 修改
 # 4 Delete Petalinux App
 
 # Reference
