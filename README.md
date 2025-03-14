@@ -48,6 +48,7 @@ socket INADDR_ANY
 - mysocat (pipline transmition) 
 
 usb hub怎麼一插上去就自動設定ip
+socket绑定的ip為INADDR_ANY 的意義
 # Device Tree
 ???
 # Linux System programming(系統程式設計)

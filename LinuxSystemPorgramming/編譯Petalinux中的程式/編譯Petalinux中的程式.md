@@ -1,7 +1,36 @@
 [TOC]
 
-# 1. 第三方工具鍊 third party toolchain
-TBD: arm-none-eabi-gcc, aarch64-linux-gnu-gcc, etc.
+# 1. 交叉編譯器
+## 1.1 安裝GCC
+檢查是否有安裝過針對ARM AA64 的編譯器GCC
+```
+// Any Linux, windows wsl, ubuntu .etc
+$ which aarch64-linux-gnu-gcc
+```
+如果沒有安裝
+```
+sudo apt-get install gcc-aarch64-linux-gnu
+```
+
+## 1.2 編譯程式
+
+```
+$ gcc <test.c> -o test
+```
+
+## 1.3 傳輸到目標上執行
+可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`下載tftp server file中的執行檔
+```
+// petalinux
+# tftp -g -r test 192.168.1.1
+# tftp -g -r test2 192.168.1.1
+
+# chmod +x test
+# chmod +x test2
+
+# ./test
+# ./test2
+```
 
 
 
@@ -42,7 +71,7 @@ e.g. petalinux-build -c app -x compile
 編譯完成後，執行檔會出現在 `<proj-root>/build/tmp/work/cortexa72-cortexa53-xilinx-linux/app/1.0-r0/`
 
 ### 2.4 傳輸到目標上執行
-可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`從
+可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`下載tftp server file中的執行檔
 ```
 // petalinux
 # tftp -g -r test 192.168.1.1
