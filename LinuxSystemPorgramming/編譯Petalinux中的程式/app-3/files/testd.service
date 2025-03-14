@@ -1,0 +1,9 @@
+[Unit]
+Description=Service for conversation with R5
+  
+[Service]
+ExecStart=/usr/bin/test2
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target

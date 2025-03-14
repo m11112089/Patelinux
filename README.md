@@ -30,6 +30,7 @@ dump/write memory data
 與R5溝通
 
 # Ethernet
+socket INADDR_ANY
 網路不通怎麼辦？網路測試工具
 - PC (Windows, Linux) 
     - Wireshark
@@ -58,7 +59,8 @@ usb hub怎麼一插上去就自動設定ip
 - linux singnal
 - mailbox
 
-Daemon如何log?如何printf? 
+Daemon介紹
+- 如何log?如何printf? 
 
 process之間的通訊message queue
 
