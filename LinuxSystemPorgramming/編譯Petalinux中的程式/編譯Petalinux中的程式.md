@@ -7,9 +7,9 @@
 // Any Linux, windows wsl, ubuntu .etc
 $ which aarch64-linux-gnu-gcc
 ```
-如果沒有安裝
+如果沒有安裝的話請執行已下命令安裝
 ```
-sudo apt-get install gcc-aarch64-linux-gnu
+$ sudo apt-get install gcc-aarch64-linux-gnu
 ```
 
 ## 1.2 編譯程式
@@ -23,19 +23,14 @@ $ gcc <test.c> -o test
 ```
 // petalinux
 # tftp -g -r test 192.168.1.1
-# tftp -g -r test2 192.168.1.1
-
 # chmod +x test
-# chmod +x test2
-
 # ./test
-# ./test2
 ```
 
 
 
 # 2. Petalinux app
-## 2.1 產生一個可供使用者編輯的資料夾
+## 2.1 產生一個可供使用者編輯的App
 ```
 // build server
 $ cd <plnx-proj-root>
@@ -72,6 +67,8 @@ e.g. petalinux-build -c app -x compile
 
 ### 2.4 傳輸到目標上執行
 可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`下載tftp server file中的執行檔
+
+P.S. 記得先開啟 `tftpd64` 或 `tftp server`
 ```
 // petalinux
 # tftp -g -r test 192.168.1.1
@@ -97,6 +94,7 @@ tftpboot 0x10000000 image.ub;bootm 0x10000000;
 
 執行檔會出現在 `/usr/bin/test`, `/usr/bin/test2`中，因為在`.bb`檔中有以下設定:
 ```
+// build server
 install -m 0755 test ${D}/${bindir}
 install -m 0755 test2 ${D}/${bindir}
 ```
