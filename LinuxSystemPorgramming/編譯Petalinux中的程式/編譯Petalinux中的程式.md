@@ -14,18 +14,48 @@ $ sudo apt-get install gcc-aarch64-linux-gnu
 
 ## 1.2 編譯程式
 
+```console
+$ aarch64-linux-gnu-gcc <test.c> -o test
 ```
-$ gcc <test.c> -o test
+or 執行你的`Makefile`, 可參考我的attach, cc選aarch64-linux-gnu。[Makefile](#makefile)。
+
+```console
+$ make clean
+$ make 
 ```
 
+
 ## 1.3 傳輸到目標上執行
-可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`下載tftp server file中的執行檔
+可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`下載tftp server file中的執行檔,
+
+第一次用須先設定
+
+petalinux ip：
+```console
+$ ifconfig eth0 192.168.1.100
 ```
+local ip：
+```console
+$ ifconfig enx00e04c8913b4 192.168.1.1
+```
+
+
+```console
 // petalinux
-# tftp -g -r test 192.168.1.1
-# chmod +x test
-# ./test
+# tftp -g -r compress_program 192.168.1.1
+# tftp -g -r dwt_fpga.bin 192.168.1.1
+# chmod +x compress_program 
+# chmod +x dwt_fpga.bin 
+# ./compress_program
 ```
+## 1.4 驗證
+透過tcp server拉出檔案, local執行tcpServer.py,
+petalinux執行
+
+```console
+socat -u FILE:/run/media/mmcblkOp1/bpe10.bin
+```
+
 
 
 
@@ -160,3 +190,42 @@ tftpboot 0x10000000 image.ub;bootm 0x10000000;
 
 # Reference
 [AMD Creating and Adding Custom Applications](https://docs.amd.com/r/en-US/ug1144-petalinux-tools-reference-guide/Creating-and-Adding-Custom-Applications)
+
+
+
+### makefile
+```makefile
+CC = aarch64-linux-gnu-gcc
+CFLAGS = -Wall -g
+INCLUDE = -I./files_h
+
+SRC_DIR = files_cpp
+OBJ_DIR = obj
+BIN_DIR = bin
+
+SRCS = $(SRC_DIR)/ac_encoder.c \
+       $(SRC_DIR)/compress_main.c \
+       $(SRC_DIR)/dc_encoder.c \
+       $(SRC_DIR)/seg_header.c \
+       $(SRC_DIR)/tile_encoder.c \
+       $(SRC_DIR)/write_data.c
+
+OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+TARGET = $(BIN_DIR)/compress_program
+
+all: directories $(TARGET)
+
+directories:
+	mkdir -p $(OBJ_DIR) $(BIN_DIR)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+
+clean:
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+.PHONY: all directories clean
+```
