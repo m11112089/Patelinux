@@ -27,6 +27,7 @@ $ make
 
 ## 1.3 傳輸到目標上執行
 可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`下載tftp server file中的執行檔,
+需先開啟`tftpd64`且`Blow`開啟檔案所載資料夾。
 
 第一次用須先設定
 
