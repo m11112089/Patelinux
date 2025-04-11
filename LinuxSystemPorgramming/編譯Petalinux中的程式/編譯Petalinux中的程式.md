@@ -7,7 +7,7 @@
 // Any Linux, windows wsl, ubuntu .etc
 $ which aarch64-linux-gnu-gcc
 ```
-如果沒有安裝的話請執行已下命令安裝
+如果沒有安裝的話請執行以下命令安裝
 ```
 $ sudo apt-get install gcc-aarch64-linux-gnu
 ```
@@ -15,9 +15,9 @@ $ sudo apt-get install gcc-aarch64-linux-gnu
 ## 1.2 編譯程式
 
 ```console
-$ aarch64-linux-gnu-gcc <test.c> -o test
+$ aarch64-linux-gnu-gcc <test.c> -o <test.out>
 ```
-or 執行你的`Makefile`, 可參考我的attach, cc選aarch64-linux-gnu。[Makefile](#makefile)。
+如果專案擁有`Makefile`的話，請將`Makefile`中的編譯器選項改成剛剛安裝的`aarch64-linux-gnu`(cc=aarch64-linux-gnu)。[Makefile](#makefile)。
 
 ```console
 $ make clean
@@ -26,8 +26,8 @@ $ make
 
 
 ## 1.3 傳輸到目標上執行
-可以使用`usb` 或 `ethernet`來操作，這邊使用 `tftp`下載tftp server file中的執行檔,
-需先開啟`tftpd64`且`Blow`開啟檔案所載資料夾。
+可以使用`usb` 或 `ethernet`來將編譯出的執行檔傳輸到目標開發版上運行，這邊使用 `tftp`下載tftp server file中的執行檔,
+P.S. 請事先安裝tftp server, window 建議使用`tftpd64`
 
 第一次用須先設定
 
@@ -43,21 +43,15 @@ $ ifconfig enx00e04c8913b4 192.168.1.1
 
 ```console
 // petalinux
-# tftp -g -r compress_program 192.168.1.1
-# tftp -g -r dwt_fpga.bin 192.168.1.1
-# chmod +x compress_program 
-# chmod +x dwt_fpga.bin 
-# ./compress_program
+// 先檢查ip是否設定完成
+# ifconfig -a
+// 從tftp server 下載執行檔案
+# tftp -g -r <test.out> 192.168.1.1
+// 新增執行檔執行權限
+# chmod +x <test.out>
+// 執行
+# ./<test.out>
 ```
-## 1.4 驗證
-透過tcp server拉出檔案, local執行tcpServer.py,
-petalinux執行
-
-```console
-socat -u FILE:/run/media/mmcblkOp1/bpe10.bin
-```
-
-
 
 
 # 2. Petalinux app
