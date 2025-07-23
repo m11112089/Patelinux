@@ -1,0 +1,24 @@
+/include/ "system-conf.dtsi"
+/ {
+};
+
+&dwc3_0 {
+    dr_mode = "host";
+	maximum-speed = "super-speed";
+};
+
+&gem1 {
+    txc-skew-ps = <0X0528>;
+    rxc-skew-ps = <0X0384>;
+    status = "okay";
+};
+
+&mailbox_msg {
+	compatible = "liscotech,mbox";
+	mbox-name = "mbox-msg";
+};
+
+&hier_mbox_linux_r51_mailbox_linux_r51 {
+	compatible = "liscotech,mbox";
+	mbox-name = "mbox-aicd";
+};
