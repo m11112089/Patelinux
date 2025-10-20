@@ -186,6 +186,16 @@ tftpboot 0x10000000 image.ub;bootm 0x10000000;
 # Reference
 [AMD Creating and Adding Custom Applications](https://docs.amd.com/r/en-US/ug1144-petalinux-tools-reference-guide/Creating-and-Adding-Custom-Applications)
 
+# 5 編譯第三方open source程式
+## 以iperf為例
+1. 確認 yocto 是否有提供該程式的 recipe
+   ```bash
+   find ./components/yocto/layers/ -name "iperf*"
+   ```
+2. 如果有，則可以直接編輯<project-root>/project-spec/meta-user/conf/petalinuxbsp.conf
+   ```bash
+   IMAGE_INSTALL:append = " iperf2"
+   ```
 
 
 ### makefile
