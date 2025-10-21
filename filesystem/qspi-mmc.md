@@ -133,14 +133,16 @@ After booting via spi-mmc, root (/) should be btrfs on /dev/mmcblk0p2:
 ```bash
 root@pc100:~# df -Th
 Filesystem           Type            Size      Used Available Use% Mounted on
-/dev/root            ext4          113.1G    555.4M    106.8G   1% /
+/dev/mmcblk0p2       btrfs         115.5G    430.6M    114.1G   0% /
 devtmpfs             devtmpfs        1.8G      4.0K      1.8G   0% /dev
 tmpfs                tmpfs           1.9G         0      1.9G   0% /dev/shm
 tmpfs                tmpfs         786.5M      9.8M    776.7M   1% /run
 tmpfs                tmpfs           4.0M         0      4.0M   0% /sys/fs/cgroup
 tmpfs                tmpfs           1.9G         0      1.9G   0% /tmp
-tmpfs                tmpfs           1.9G     32.0K      1.9G   0% /var/volatile
+tmpfs                tmpfs           1.9G     12.0K      1.9G   0% /var/volatile
+/dev/mmcblk0p2       btrfs         115.5G    430.6M    114.1G   0% /run/media/mmcblk0p2
 /dev/mmcblk0p1       vfat         1022.0M     20.8M   1001.2M   2% /run/media/mmcblk0p1
-/dev/sda1            vfat          115.2G    294.8M    114.9G   0% /run/media/sda1
+/dev/sda1            vfat           14.7G      9.8G      5.0G  66% /run/media/sda1
 tmpfs                tmpfs         393.3M         0    393.3M   0% /run/user/0
+root@pc100:~#
 ```
