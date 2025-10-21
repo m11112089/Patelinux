@@ -116,7 +116,7 @@ Now (re)generate boot.scr. Use arm64 (ZynqMP is AArch64):
 
 ### 7. Program the new boot.scr into QSPI (from U-Boot)
 
-> ZynqMP> sf probe;fatload usb 0:1 0x80000 pc100/boot_2.scr;echo "erase ...";sf erase 1000000 3000000;echo "write src...";sf write 0x80000 0x3E80000 $filesize;
+> ZynqMP> sf probe;fatload usb 0:1 0x80000 boot.scr;echo "erase ...";sf erase 1000000 3000000;echo "write src...";sf write 0x80000 0x3E80000 $filesize;
 
 
 ### 8. Select the new boot target and save
