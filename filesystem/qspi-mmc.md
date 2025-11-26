@@ -99,7 +99,7 @@ index 4499346..96d5b26 100644
                 echo "Booting using Separate images failed"
         fi
 +       if test "${boot_target}" = "spi-mmc"; then
-+               setenv bootargs = "root=/dev/mmcblk0p2 rootwait rw";
++               setenv bootargs "root=/dev/mmcblk0p2 rootwait rw";
 +
 +               fatload mmc 0:1 0x00200000 Image;
 +               fatload mmc 0:1 0x00100000 system.dtb;
